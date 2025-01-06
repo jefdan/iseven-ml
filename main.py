@@ -19,8 +19,8 @@ labels = np.array([1 if x % 2 != 0 else 0 for x in data])
 
 
 # Convert the 'data' to binary representation.
-# When the data is not converted to binary, the model won't be able
-# to learn a pattern because there aren't any.
+# If the data isn't converted to binary, the model won't be able
+# to learn a pattern because there isn't really one.
 def int_to_binary_array(x, width=16):
     return np.array(list(np.binary_repr(x, width=width)), dtype=np.float32)
 
