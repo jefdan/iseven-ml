@@ -11,6 +11,9 @@ A PyTorch classification model to determine if a number is odd or even.
 ## Tweaking Parameters
 You can tweak the number of epochs that the model is trained on in `main.py`. Modify the `num_epochs` variable. Ensure that you delete `iseven-ml.pth` afterwards to re-generate the model.
 
+## How Does It Work?
+The programme generates integers from 1 to 65535 and then labels the odd numbers 1, and the even numbers 0. The model is then trained on this 'dataset'. However, the integers are first converted to a binary representation, which is a list of 0.0s or 1.0s. This is because using just the integer itself leaves nothing for the model to analyse. It would be trying to predict randomness.
+
 ## Gallery
 ![The command line output of the programme.](images/cli-output.png)
 ![The ROC curve from test.py.](images/roc-curve.png)
