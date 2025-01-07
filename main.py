@@ -20,12 +20,12 @@ odd_numbers = np.random.choice(
     replace=False
     )
 even_numbers = np.random.choice(
-    np.arange(0, max_value, 2),
+    np.arange(2, max_value, 2),
     sample_size,
     replace=False
     )
-data = np.concatenate((odd_numbers, even_numbers))
-labels = np.array([1] * sample_size + [0] * sample_size)
+data = np.concatenate(([0], odd_numbers, even_numbers))
+labels = np.array([0] + [1] * sample_size + [0] * sample_size)
 
 
 # Convert the 'data' to binary representation.
