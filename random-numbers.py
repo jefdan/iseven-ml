@@ -4,7 +4,7 @@ import numpy as np
 test_data_path = "test_data.csv"
 test_data_df = pd.read_csv(test_data_path)
 
-random_numbers = np.random.randint(0, 65536, size=1000)
+random_numbers = np.random.randint(0, 2**16-1, size=1000)
 
 random_numbers_df = pd.DataFrame(random_numbers, columns=["number"])
 

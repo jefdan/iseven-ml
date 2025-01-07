@@ -5,14 +5,13 @@ import numpy as np
 import pandas as pd
 import os
 
-# Check if a (Nvidia) GPU is available.
-# GPUs are cool and much faster than CPUs.
+# Check if a CUDA GPU is available.
+# The training process will be much faster with CUDA.
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
 # Generate the 'dataset'.
-# A small, representative sample with an equal number of
-# odd and even numbers, including zero.
+# 1024 even numbers, 1024 odd numbers, and zero.
 sample_size = 1024
 max_value = 2**16-1
 odd_numbers = np.random.choice(
@@ -32,7 +31,7 @@ labels = np.array([1] * sample_size + [0] * sample_size)
 # Convert the 'data' to binary representation.
 # If the data isn't converted to binary, the model won't be able
 # to learn a pattern because there isn't really one.
-def int_to_binary_array(x, width=16):
+def int_to_binary_array(x, width=64):
     return np.array(list(np.binary_repr(x, width=width)), dtype=np.float32)
 
 
@@ -48,8 +47,6 @@ def labels_to_human_readable(predicted_labels):
 
 
 binary_data = np.array([int_to_binary_array(x) for x in data])
-
-# Convert to PyTorch tensors and move to device.
 data = torch.tensor(binary_data, dtype=torch.float32).to(device)
 labels = torch.tensor(labels, dtype=torch.float32).view(-1, 1).to(device)
 
@@ -85,7 +82,7 @@ def weights_init(m):
 model.apply(weights_init)
 
 # Define loss and optimiser.
-criterion = nn.BCELoss()  # Binary Cross Entropy Loss.
+criterion = nn.BCELoss()
 optimiser = optim.SGD(model.parameters(), lr=0.001)
 
 # Check the dataset's balance.
@@ -94,7 +91,8 @@ even_count = len(labels) - odd_count
 print(f"Odd count: {odd_count}, Even count: {even_count}")
 
 # Train the model!
-num_epochs = 25000  # Number of epochs, modify this!
+# You can modify the epochs below.
+num_epochs = 100000
 model_path = "iseven-ml.pth"
 
 if os.path.exists(model_path):
@@ -151,11 +149,11 @@ output_df = pd.DataFrame({
 output_df.to_csv("output_predictions.csv", index=False)
 
 # Finally also print this test to the console.
-print(f"{'Test Data':<10} {'Prediction':<12} {'Label':<6}")
-print('-' * 32)
+print(f"{'Test Data':<14} {'Prediction':<12} {'Label':<6}")
+print('-' * 33)
 for i in range(len(test_data_int)):
     print(
-        f"{test_data_int[i]:<13} "
+        f"{test_data_int[i]:<14} "
         f"{predictions_list[i]:<12.4f} "
         f"{human_readable_labels[i]:<6}"
     )
