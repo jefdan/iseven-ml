@@ -1,5 +1,5 @@
 # IsEven ML
-A PyTorch classification model to determine if a number is odd or even.
+A PyTorch neural network to determine if a number is odd or even.
 
 ## How Do I Use This?
 1. First, install the requirements with `pip install -r requirements.txt`.
