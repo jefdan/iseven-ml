@@ -25,7 +25,7 @@ print("Model loaded from disk.")
 # Load test data from test_data.csv.
 test_data_df = pd.read_csv("test_data.csv")
 test_data_list = [
-    int_to_binary_array(x, width=16) for x in test_data_df['number']
+    int_to_binary_array(x, width=64) for x in test_data_df['number']
     ]
 test_data = torch.tensor(
     np.array(test_data_list),

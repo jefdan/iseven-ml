@@ -5,17 +5,28 @@ import numpy as np
 import pandas as pd
 import os
 
-# Check if a GPU is available.
-# GPUs are very fast and cool. If you have one, you should use it.
+# Check if a (Nvidia) GPU is available.
+# GPUs are cool and much faster than CPUs.
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
 # Generate the 'dataset'.
-# Integers from 1 to 65535.
-# The maximum is 65535 because we are using a 16-bit binary representation.
-data = np.arange(1, 65536)
-# 1 for odd, 0 for even.
-labels = np.array([1 if x % 2 != 0 else 0 for x in data])
+# A small, representative sample with an equal number of
+# odd and even numbers, including zero.
+sample_size = 1024
+max_value = 2**16-1
+odd_numbers = np.random.choice(
+    np.arange(1, max_value, 2),
+    sample_size,
+    replace=False
+    )
+even_numbers = np.random.choice(
+    np.arange(0, max_value, 2),
+    sample_size,
+    replace=False
+    )
+data = np.concatenate((odd_numbers, even_numbers))
+labels = np.array([1] * sample_size + [0] * sample_size)
 
 
 # Convert the 'data' to binary representation.
@@ -47,7 +58,7 @@ labels = torch.tensor(labels, dtype=torch.float32).view(-1, 1).to(device)
 class SimpleNN(nn.Module):
     def __init__(self):
         super(SimpleNN, self).__init__()
-        self.fc1 = nn.Linear(16, 32)
+        self.fc1 = nn.Linear(64, 32)
         self.fc2 = nn.Linear(32, 16)
         self.fc3 = nn.Linear(16, 1)
         self.sigmoid = nn.Sigmoid()
@@ -110,17 +121,16 @@ else:
     torch.save(model.state_dict(), model_path)
     print("Model saved to disk.")
 
-# Load the test data from test_data.csv.
+# Now test the model with data from test_data.csv.
 test_data_df = pd.read_csv("test_data.csv")
 test_data_list = [
     int_to_binary_array(
         x,
-        width=16) for x in test_data_df['number']]
+        width=64) for x in test_data_df['number']]
 test_data = torch.tensor(
     np.array(test_data_list),
     dtype=torch.float32).to(device)
 
-# Test the model!
 model.eval()
 predictions = model(test_data)
 # If the probability is greater than 0.5, the number is odd.
@@ -140,13 +150,12 @@ output_df = pd.DataFrame({
 
 output_df.to_csv("output_predictions.csv", index=False)
 
-# Finally print the small test that we have done here to the
-# console.
+# Finally also print this test to the console.
 print(f"{'Test Data':<10} {'Prediction':<12} {'Label':<6}")
-print("-" * 30)
+print('-' * 32)
 for i in range(len(test_data_int)):
     print(
-        f"{test_data_int[i]:<10} "
+        f"{test_data_int[i]:<13} "
         f"{predictions_list[i]:<12.4f} "
         f"{human_readable_labels[i]:<6}"
     )
